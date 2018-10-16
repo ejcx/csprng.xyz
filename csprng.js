@@ -4,7 +4,7 @@ addEventListener('fetch', event => {
 })
 
 
-let apiheaders = new Headers({'Access-Control-Allow-Origin': '*'})
+let apiheaders = new Headers({'Access-Control-Allow-Origin': '*', 'Content-type': 'application/json'})
 const index = `<!DOCTYPE html>
 <head>
 <style>
@@ -106,8 +106,11 @@ function handleRandom(url) {
     case "base64":
       r = btoa(String.fromCharCode.apply(null, buf))
       break;
+    case "raw":
+      r = ArrayBuffer.from(buf).toString('hex');
+      break
     default:
-      return respond(400, "Invalid format. Allowed (base64)")
+      return respond(400, "Invalid format. Allowed (base64, raw)")
   }
   return respond(200, r)
 }
