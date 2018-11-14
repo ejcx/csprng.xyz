@@ -59,7 +59,7 @@ $ curl https://csprng.xyz/v1/api
 </html>`;
 
 // randombytes performs the generation of the random numbers.
- function randombytes(n) {
+function randombytes(n) {
   var buf = new Uint8Array(n)
   crypto.getRandomValues(buf)
   var r = btoa(String.fromCharCode.apply(null, buf))
@@ -72,17 +72,15 @@ $ curl https://csprng.xyz/v1/api
 // and put clients in to a position where they accidently use an error msg
 // as the randomness.
 function respond(statusCode, message) {
-  var head = "Data"
+  var s = {};
   if (statusCode != 200) {
-    head = "Message"
+    s['Message'] = message
+  } else {
+    s['Data'] = message
   }
-  var d = new Date().toISOString();
-  return new Response(`
-  {
-        "Status": ` + statusCode + `,
-        "` + head + `": "` + message + `",
-        "Time": "`+d+`"
-  }`, {status:statusCode, headers: apiheaders})
+  s['Time'] = new Date().toISOString();
+  s['Status'] = statusCode;
+  return new Response(JSON.stringify(s), {status:statusCode, headers: apiheaders})
 }
 
 // handlRandom is the /v1/api handler.
